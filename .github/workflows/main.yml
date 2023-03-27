@@ -22,8 +22,8 @@ jobs:
         run: mkdir artifact && cp target/*.jar artifact
       - uses: actions/upload-artifact@v3
         with:
-          name: Package
-          path: artifact
+          name: build-output
+          path: artifact/
 
   deploy:
 
@@ -37,7 +37,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: artifact
+          name: build-output
           path: target/
 
       - name: Deploy to server
