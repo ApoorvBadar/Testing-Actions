@@ -5,15 +5,15 @@ on: [push,pull_request]
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Clone repo
+      - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Set up JDK 11
+      - name: Set up JDK 8
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '8'
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
@@ -24,4 +24,36 @@ jobs:
         with:
           name: Package
           path: artifact
+
+  deploy:
+
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: target/
+
+      - name: Deploy to server
+        run: |
+          # Use the "target/" directory from Job 1 as the input for Job 2
+          # scp -r target/ ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/var/www/html/
+          
+
+  Run-Caesar-Tests:
+
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Run Caesar Tests
+        run: echo "Testing"
+
+
 
