@@ -14,7 +14,7 @@ jobs:
       - name: Set Fork Owner as Environment Variable
         run: |
           fork_owner=$(echo "${{ github.event.pull_request.head.repo.fork }}" | cut -d'/' -f1)
-          echo "::set-env name=FORK_OWNER::${fork_owner}"
+          echo $fork_owner
 
       - name: Use Fork Owner in Subsequent Step
         run: |
