@@ -15,16 +15,11 @@ jobs:
       - name: Print Pull Request Object
         run: |
           echo "${{ toJson(github.event.pull_request) }}"
-          
-      - name: Set Fork Owner as Environment Variable
-        run: |
-          fork_owner=$(echo "${{ github.event.pull_request.head.repo.fork }}" | cut -d'/' -f1)
-          echo $fork_owner
-
-      - name: Use Fork Owner in Subsequent Step
-        run: |
-          
+                    
 
       - name: Get Fork and Branch Name
         run: |
-          echo "Branch: ${{ github.head_ref }}"
+          head_label=${{github.event.pull_request.head.label}}
+          Fork_Owner=$(echo $head_label | cut -d':' -f1)
+          echo "Fork Owner: $fork_owner"
+          echo "Branch: ${{ github.event.pull_request.head.ref }}"
