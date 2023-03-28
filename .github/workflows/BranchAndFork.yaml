@@ -22,5 +22,4 @@ jobs:
 
       - name: Get Fork and Branch Name
         run: |
-          echo "Fork Owner: ${{ env.FORK_OWNER }}"
           echo "Branch: ${{ github.head_ref }}"
