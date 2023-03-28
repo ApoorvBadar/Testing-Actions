@@ -2,6 +2,7 @@ name: Get Fork and Branch Name
 
 on:
   pull_request:
+    branches: [master]
     types: [opened]
 
 jobs:
@@ -10,9 +11,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set Fork Owner as Environment Variable
+        run: |
+          fork_name=${{ github.event.pull_request.head.repo.fork }}
+          fork_owner=${{ fork_name.split('/')[0] }}
+          echo "::set-env name=FORK_OWNER::${fork_owner}"
+
+      - name: Use Fork Owner in Subsequent Step
+        run: |
+          
 
       - name: Get Fork and Branch Name
         run: |
-          echo "Fork: ${{ github.head_repository }}"
+          echo "Fork Owner: ${{ env.FORK_OWNER }}"
           echo "Branch: ${{ github.head_ref }}"
-          echo $github
