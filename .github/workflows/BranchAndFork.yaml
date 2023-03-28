@@ -11,6 +11,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        
+      - name: Print Pull Request Object
+        run: |
+          echo "${{ toJson(github.event.pull_request) }}"
+          
       - name: Set Fork Owner as Environment Variable
         run: |
           fork_owner=$(echo "${{ github.event.pull_request.head.repo.fork }}" | cut -d'/' -f1)
