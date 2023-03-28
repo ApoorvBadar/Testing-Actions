@@ -21,5 +21,5 @@ jobs:
         run: |
           head_label=${{github.event.pull_request.head.label}}
           Fork_Owner=$(echo $head_label | cut -d':' -f1)
-          echo "Fork Owner: $fork_owner"
+          echo "Fork Owner: $Fork_Owner"
           echo "Branch: ${{ github.event.pull_request.head.ref }}"
