@@ -15,3 +15,4 @@ jobs:
         run: |
           echo "Fork: ${{ github.head_repository }}"
           echo "Branch: ${{ github.head_ref }}"
+          each "Obj :${{github}}"
