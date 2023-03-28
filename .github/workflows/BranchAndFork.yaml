@@ -13,8 +13,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Set Fork Owner as Environment Variable
         run: |
-          fork_name=${{ github.event.pull_request.head.repo.fork }}
-          fork_owner=${{ fork_name.split('/')[0] }}
+          fork_owner=$(echo "${{ github.event.pull_request.head.repo.fork }}" | cut -d'/' -f1)
           echo "::set-env name=FORK_OWNER::${fork_owner}"
 
       - name: Use Fork Owner in Subsequent Step
