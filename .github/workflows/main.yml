@@ -1,59 +1,41 @@
 name: Java CI with Maven
 
-on: [push,pull_request]
+on:
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: maven
-      - name: Build with Maven
-        run: mvn clean install -U
-      - name: Move the package
-        run: mkdir artifact && cp target/*.jar artifact
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build-output
-          path: artifact/
+    - uses: actions/checkout@v2
 
-  deploy:
+   
 
-    runs-on: ubuntu-latest
-    needs: build
+    - name: Store Test Results
+      run: |
+        echo "Hello World" > result
+        mkdir -p $HOME/test-results/$(date +%Y-%m-%d_%H-%M-%S)
+        cp  result $HOME/test-results/$(date +%Y-%m-%d_%H-%M-%S)/
+      shell: bash
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Upload Test Results as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: $HOME/test-results
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-output
-          path: target/
-
-      - name: Deploy to server
-        run: |
-          # Use the "target/" directory from Job 1 as the input for Job 2
-          # scp -r target/ ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/var/www/html/
-          
-
-  Run-Caesar-Tests:
-
-    runs-on: ubuntu-latest
-    needs: deploy
-
-    steps:
-      - name: Run Caesar Tests
-        run: echo "Testing"
+    - name: Create Deployment Status
+      run: |
+        curl -s -X POST \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.ant-man-preview+json" \
+          -H "Content-Type: application/json" \
+          -d "{\"state\": \"success\", \"target_url\": \"https://github.com/${{ github.repository }}/actions/artifacts/${{ job.outputs.artifact_id }}/zip\", \"description\": \"Test results available at https://github.com/${{ github.repository }}/actions/artifacts/${{ job.outputs.artifact_id }}/zip\", \"environment\": \"production\"}" \
+          "https://api.github.com/repos/${{ github.repository }}/deployments/${{ github.run_id }}/statuses"
+      env:
+        ARTIFACT_ID: ${{ steps.upload-test-results.outputs.artifact_id }}
 
 
 
